@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advert Generator — Pegasus Finance</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #C8932A;
+      --gold-light: #E8B84B;
+      --gold-pale: #FBF4E8;
+      --dark: #1A1A1A;
+      --mid: #4A4A4A;
+      --muted: #8A8A8A;
+      --border: #E4DDD2;
+      --surface: #FAFAF8;
+      --white: #FFFFFF;
+      --danger: #C0392B;
+      --success: #2E7D52;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--dark);
+      padding: 2rem;
+    }
+
+    .login-card {
+      background: var(--white);
+      border-radius: 4px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .login-logo span { color: var(--gold); }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
+    }
+
+    .login-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+
+    .login-input {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--surface);
+      color: var(--dark);
+      letter-spacing: 0.1em;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .login-input:focus { outline: none; border-color: var(--gold); }
+    .login-input.error { border-color: var(--danger); }
+
+    .login-error {
+      font-size: 13px;
+      color: var(--danger);
+      margin-bottom: 1rem;
+      min-height: 18px;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--dark);
+      color: var(--white);
+      border: none;
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover { background: var(--gold); }
+
+    /* ── MAIN APP ── */
+    #app-screen { display: none; min-height: 100vh; }
+
+    header {
+      background: var(--dark);
+      padding: 0 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .header-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .header-logo span { color: var(--gold); }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .usage-badge {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.04em;
+    }
+
+    .usage-badge strong {
+      color: var(--gold-light);
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      background: none;
+      border: none;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .logout-btn:hover { color: rgba(255,255,255,0.8); }
+
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 400;
+      color: var(--dark);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .page-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      color: var(--dark);
+      border-bottom-color: var(--gold);
+      font-weight: 500;
+    }
+
+    .tab:hover:not(.active) { color: var(--mid); }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── FORM ELEMENTS ── */
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      padding: 14px 16px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.7;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--white);
+      color: var(--dark);
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus { outline: none; border-color: var(--gold); }
+
+    input[type=text] {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      background: var(--white);
+      color: var(--dark);
+      transition: border-color 0.2s;
+    }
+
+    input[type=text]:focus { outline: none; border-color: var(--gold); }
+
+    .field-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── LENGTH SELECTOR ── */
+    .length-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .length-label-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mid);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-right: 4px;
+    }
+
+    .len-btn {
+      padding: 7px 16px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      background: var(--white);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .len-btn.active {
+      background: var(--dark);
+      color: var(--white);
+      border-color: var(--dark);
+      font-weight: 500;
+    }
+
+    .len-btn:hover:not(.active) {
+      border-color: var(--gold);
+      color: var(--dark);
+    }
+
+    /* ── ACTIONS ── */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-primary {
+      padding: 12px 28px;
+      background: var(--dark);
+      color: var(--white);
+      border: none;
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--gold); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-secondary {
+      padding: 12px 24px;
+      background: var(--white);
+      color: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+    }
+
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-secondary.visible { display: inline-block; }
+
+    .limit-warning {
+      font-size: 13px;
+      color: var(--danger);
+      display: none;
+    }
+
+    .limit-warning.visible { display: block; }
+
+    /* ── OUTPUT ── */
+    .output-section {
+      margin-top: 2.5rem;
+      display: none;
+    }
+
+    .output-section.visible { display: block; }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .output-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--dark);
+    }
+
+    .output-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .copy-btn {
+      padding: 8px 18px;
+      background: var(--white);
+      color: var(--mid);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .copy-btn.copied { color: var(--success); border-color: var(--success); }
+
+    .output-body {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 2rem;
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--dark);
+      white-space: pre-wrap;
+    }
+
+    /* ── LOADING STATE ── */
+    .loading-row {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1rem;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .loading-row.visible { display: flex; }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 1.25rem; }
+      .container { padding: 2rem 1.25rem; }
+      .login-card { padding: 2rem 1.5rem; }
+      .output-body { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Pegasus<span>.</span></div>
+    <div class="login-sub">Advert Generator</div>
+    <label class="login-label" for="pwd-input">Access code</label>
+    <input type="password" class="login-input" id="pwd-input" placeholder="Enter your access code" onkeydown="if(event.key==='Enter')tryLogin()" />
+    <div class="login-error" id="login-error"></div>
+    <button class="login-btn" onclick="tryLogin()">Continue</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <header>
+    <div class="header-logo">Pegasus<span>.</span></div>
+    <div class="header-right">
+      <div class="usage-badge">Adverts generated this session: <strong id="usage-count">0</strong> / <strong>10</strong></div>
+      <button class="logout-btn" onclick="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title">Vehicle Advert Generator</h1>
+    <p class="page-sub">Create compelling, on-brand listings for Campers4sale.co.uk</p>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('paste')">Paste details</button>
+      <button class="tab" onclick="switchTab('url')">Advert URL</button>
+    </div>
+
+    <div id="tab-paste" class="panel active">
+      <label class="field-label">Vehicle details</label>
+      <textarea id="paste-input" placeholder="Paste existing description or key details — make, model, year, mileage, spec, condition, asking price, conversion type, recent work carried out, etc."></textarea>
+      <div class="field-hint">The more detail you provide, the better the advert. Include anything that makes this vehicle stand out.</div>
+    </div>
+
+    <div id="tab-url" class="panel">
+      <label class="field-label">Advert URL</label>
+      <input type="text" id="url-input" placeholder="https://www.campers4sale.co.uk/advert/..." />
+      <div class="field-hint">Paste a link to an existing advert and the generator will extract the details and rewrite the listing.</div>
+    </div>
+
+    <div class="length-row">
+      <span class="length-label-text">Length:</span>
+      <button class="len-btn" id="len-short" onclick="setLength('short')">Short</button>
+      <button class="len-btn active" id="len-standard" onclick="setLength('standard')">Standard</button>
+      <button class="len-btn" id="len-detailed" onclick="setLength('detailed')">Detailed</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="gen-btn" onclick="generate(false)">Generate advert</button>
+      <button class="btn-secondary" id="regen-btn" onclick="generate(true)">Regenerate</button>
+      <span class="limit-warning" id="limit-warning">Session limit reached (10 adverts). Please refresh to start a new session.</span>
+    </div>
+
+    <div class="loading-row" id="loading-row">
+      <div class="spinner"></div>
+      <span id="loading-text">Writing your advert…</span>
+    </div>
+
+    <div class="output-section" id="output-section">
+      <hr class="divider" />
+      <div class="output-header">
+        <div>
+          <div class="output-title">Generated advert</div>
+          <div class="output-meta" id="output-meta"></div>
+        </div>
+        <button class="copy-btn" id="copy-btn" onclick="copyText()">Copy text</button>
+      </div>
+      <div class="output-body" id="output-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── CONFIG ──
+  const ACCESS_CODE = 'pegasus2024';   // Change this to your chosen password
+  const SESSION_LIMIT = 10;             // Max adverts per session
+
+  let activeTab = 'paste';
+  let activeLength = 'standard';
+  let usageCount = 0;
+  let lastInput = '';
+  let lastIsUrl = false;
+  let generationCount = 0;
+
+  // ── AUTH ──
+  function tryLogin() {
+    const val = document.getElementById('pwd-input').value.trim();
+    const err = document.getElementById('login-error');
+    const inp = document.getElementById('pwd-input');
+    if (val === ACCESS_CODE) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-screen').style.display = 'block';
+      err.textContent = '';
+      inp.classList.remove('error');
+    } else {
+      err.textContent = 'Incorrect access code. Please try again.';
+      inp.classList.add('error');
+      inp.value = '';
+      inp.focus();
+    }
+  }
+
+  function logout() {
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('pwd-input').value = '';
+    usageCount = 0;
+    updateUsage();
+  }
+
+  // ── TABS ──
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.tab').forEach((t, i) =>
+      t.classList.toggle('active', (i===0&&tab==='paste')||(i===1&&tab==='url')));
+    document.getElementById('tab-paste').classList.toggle('active', tab==='paste');
+    document.getElementById('tab-url').classList.toggle('active', tab==='url');
+  }
+
+  // ── LENGTH ──
+  function setLength(len) {
+    activeLength = len;
+    ['short','standard','detailed'].forEach(l =>
+      document.getElementById('len-'+l).classList.toggle('active', l===len));
+  }
+
+  // ── USAGE ──
+  function updateUsage() {
+    document.getElementById('usage-count').textContent = usageCount;
+    const atLimit = usageCount >= SESSION_LIMIT;
+    document.getElementById('gen-btn').disabled = atLimit;
+    document.getElementById('regen-btn').disabled = atLimit;
+    document.getElementById('limit-warning').classList.toggle('visible', atLimit);
+  }
+
+  // ── GENERATE ──
+  async function generate(isRegen) {
+    if (usageCount >= SESSION_LIMIT) return;
+
+    const input = isRegen ? lastInput
+      : (activeTab === 'paste'
+          ? document.getElementById('paste-input').value.trim()
+          : document.getElementById('url-input').value.trim());
+
+    const isUrl = isRegen ? lastIsUrl : activeTab === 'url';
+    if (!input) return;
+
+    lastInput = input;
+    lastIsUrl = isUrl;
+    generationCount++;
+
+    const lengthMap = {
+      short: { label: 'Short', note: '2 to 3 short paragraphs' },
+      standard: { label: 'Standard', note: '4 to 5 paragraphs' },
+      detailed: { label: 'Detailed', note: '6 to 8 paragraphs' }
+    };
+
+    const { label, note } = lengthMap[activeLength];
+    const regenNote = isRegen && generationCount > 1
+      ? ' Write a completely fresh variation — use a different structure, opening sentence, and phrasing from any previous version.' : '';
+
+    // UI state
+    document.getElementById('gen-btn').disabled = true;
+    document.getElementById('regen-btn').disabled = true;
+    document.getElementById('loading-row').classList.add('visible');
+    document.getElementById('loading-text').textContent = 'Writing your advert…';
+    document.getElementById('output-section').classList.remove('visible');
+
+    const systemPrompt = `You are an expert copywriter for Campers4sale.co.uk, working for Pegasus Finance. You write compelling, professional vehicle advert descriptions for motorhomes, campervans, and caravans.
+
+BRAND VOICE:
+- Personality: Supportive, friendly, responsive, knowledgeable
+- Tone: Down to earth, informal but professional, conversational and personal
+- UK English ONLY — British spellings throughout (specialise not specialize, colour not color, recognised not recognized, etc.)
+- No emojis or icons whatsoever
+- No exaggerated claims — be persuasive but accurate and honest
+- Vary structure and format so each advert feels individually written
+- Do NOT include clickable links, citations, footnotes, or reference markers
+- Short paragraphs, easy to scan
+
+LENGTH: Write a ${label.toLowerCase()} advert — ${note}.${regenNote}
+
+OUTPUT: Write ONLY the advert description. No preamble, no commentary, no sign-off. Just the advert copy, ready to publish.`;
+
+    const userMessage = isUrl
+      ? `Write a vehicle advert description based on this listing URL: ${input}`
+      : `Write a vehicle advert description using these details:\n\n${input}`;
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ system: systemPrompt, message: userMessage })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      const text = data.content
+        .map(b => b.text || '').join('')
+        .replace(/\[\d+\]/g, '')
+        .replace(/\(https?:\/\/[^\)]+\)/g, '')
+        .trim();
+
+      document.getElementById('output-body').textContent = text;
+      document.getElementById('output-meta').textContent =
+        `${label} · ${isRegen ? 'Regenerated' : 'Generated'} just now`;
+      document.getElementById('output-section').classList.add('visible');
+      document.getElementById('regen-btn').classList.add('visible');
+      document.getElementById('copy-btn').textContent = 'Copy text';
+      document.getElementById('copy-btn').classList.remove('copied');
+
+      usageCount++;
+      updateUsage();
+
+    } catch (err) {
+      document.getElementById('output-body').textContent =
+        'Something went wrong — please try again.';
+      document.getElementById('output-section').classList.add('visible');
+    }
+
+    document.getElementById('loading-row').classList.remove('visible');
+    document.getElementById('gen-btn').disabled = usageCount >= SESSION_LIMIT;
+    document.getElementById('regen-btn').disabled = usageCount >= SESSION_LIMIT;
+  }
+
+  // ── COPY ──
+  function copyText() {
+    const text = document.getElementById('output-body').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy text';
+        btn.classList.remove('copied');
+      }, 2500);
+    });
+  }
+</script>
+</body>
+</html>
