@@ -9,7 +9,20 @@ module.exports = async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
-  const { system, message } = req.body || {};
+  let body = '';
+  await new Promise((resolve) => {
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', resolve);
+  });
+
+  let parsed;
+  try {
+    parsed = JSON.parse(body);
+  } catch (e) {
+    return res.status(400).json({ error: 'Invalid JSON body' });
+  }
+
+  const { system, message } = parsed;
   if (!system || !message) return res.status(400).json({ error: 'Missing fields' });
 
   try {
